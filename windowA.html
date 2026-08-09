@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LTO Cabuyao District Office - Registration (Window A)</title>
+    <meta name="description" content="Land Transportation Office Cabuyao District Office Registration Queue Ticket Generator">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Window A header button styles (matching Window B) */
+        .wa-header-winlist {
+            background: transparent;
+            color: #fff;
+            font-family: var(--font-family);
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 8px 20px;
+            border: 2.5px solid #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .2s, color .2s, transform .2s;
+            letter-spacing: .5px;
+        }
+
+        .wa-header-winlist:hover {
+            background: #fff;
+            color: var(--btn-blue);
+            transform: translateY(-2px);
+        }
+
+        .wa-header-logout {
+            background: linear-gradient(135deg, #e60000, #8c0000);
+            color: #fff;
+            font-family: var(--font-family);
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform .2s, box-shadow .2s;
+            box-shadow: 0 4px 12px rgba(230, 0, 0, .4);
+            letter-spacing: .5px;
+        }
+
+        .wa-header-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(230, 0, 0, .55);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="header">
+        <div class="header-left">
+            <img src="img/logo.png" alt="LTO Logo" class="header-logo">
+            <div class="header-title-container">
+                <span class="header-title">LAND TRANSPORTATION OFFICE</span>
+                <span class="header-subtitle">CABUYAO DISTRICT OFFICE</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="time-container">
+                <span class="date-text" id="date-display">August 02, 2026</span>
+                <span class="time-text" id="time-display">14:34:33</span>
+            </div>
+            <a href="windowList.html" class="wa-header-winlist" id="winlist-btn">WINDOW LIST</a>
+            <a href="#" class="wa-header-logout" id="logout-btn">LOGOUT</a>
+        </div>
+    </header>
+
+    <!-- Main Registration Section -->
+    <main class="hero">
+        <!-- Faint Watermark Logo in Background -->
+        <img src="img/logo.png" alt="LTO Logo Watermark" class="hero-watermark">
+        
+        <h1 class="hero-title registration-title">REGISTRATION</h1>
+        
+        <div class="registration-container">
+            <!-- Left Pane: Input and Selections -->
+            <div class="registration-left">
+                <form id="registration-form" onsubmit="event.preventDefault();">
+                    <!-- Name Input & Priority Toggle Row -->
+                    <div class="registration-inputs-row">
+                        <div class="input-border-group">
+                            <input type="text" id="name-input" placeholder=" " autocomplete="off">
+                            <label for="name-input">NAME(OPTIONAL)</label>
+                        </div>
+                        
+                        <div class="priority-toggle-container">
+                            <div class="toggle-switch" id="priority-toggle">
+                                <div class="toggle-slider"></div>
+                            </div>
+                            <span class="priority-label">PRIORITY</span>
+                        </div>
+                    </div>
+
+                    <!-- Purpose Selection Cards -->
+                    <div class="purpose-cards-grid">
+                        <!-- Renewal Card (Green theme) -->
+                        <div class="purpose-card card-renewal" id="card-renewal" onclick="selectPurpose('renewal')">
+                            <span class="card-title">RENEWAL</span>
+                            <div class="logo-container">
+                                <img src="img/refresh-circle.png" alt="Renewal Icon" class="card-logo">
+                            </div>
+                        </div>
+
+                        <!-- Miscellaneous Card (Yellow theme) -->
+                        <div class="purpose-card card-misc" id="card-misc" onclick="selectPurpose('misc')">
+                            <span class="card-title">MISCELLANEOUS</span>
+                            <div class="logo-container">
+                                <img src="img/car-sport.png" alt="Misc Icon" class="card-logo">
+                            </div>
+                        </div>
+
+                        <!-- Letas Card (White theme) -->
+                        <div class="purpose-card card-letas" id="card-letas" onclick="selectPurpose('letas')">
+                            <span class="card-title">LETAS</span>
+                            <div class="logo-container">
+                                <img src="img/alert-circle.png" alt="Letas Icon" class="card-logo">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comment Input with Importance Toggle Circle -->
+                    <div class="comment-group">
+                        <div class="input-border-group comment-textarea-group">
+                            <textarea id="comment-input" placeholder=" " autocomplete="off" rows="3"></textarea>
+                            <label for="comment-input">COMMENT</label>
+                            <div class="comment-important-circle" id="important-circle" title="Mark as Important" onclick="toggleCommentImportant()"></div>
+                        </div>
+                    </div>
+
+                    <!-- Glass Texture Buttons Row -->
+                    <div class="registration-buttons-row">
+                        <button type="button" class="generate-btn" id="generate-button" disabled onclick="generateTicket()">GENERATE</button>
+                        <button type="button" class="print-btn" id="print-button" style="display: none;" onclick="printTicket()">
+                            <span class="print-btn-text">PRINT</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Pane: Ticket Live Preview -->
+            <div class="registration-right">
+                <span class="preview-header">PREVIEW</span>
+                
+                <div class="preview-box">
+                    <!-- Default Placeholder when no preview exists -->
+                    <div class="no-preview" id="no-preview-placeholder">
+                        <span>NO PREVIEW</span>
+                    </div>
+
+                    <!-- Thermal Ticket Paper Preview Card -->
+                    <div class="ticket-paper" id="ticket-paper" style="display: none;">
+                        <div class="ticket-header">
+                            <img src="img/logo.png" alt="LTO Logo" class="ticket-logo">
+                            <div class="ticket-lto-title">LAND TRANSPORTATION OFFICE</div>
+                            <div class="ticket-lto-subtitle">CABUYAO DISTRICT OFFICE</div>
+                        </div>
+                        
+                        <div class="ticket-divider"></div>
+                        
+                        <div class="ticket-section-title">TICKET NUMBER</div>
+                        
+                        <!-- Boxed Ticket Number -->
+                        <div class="ticket-number-box" id="ticket-num-box">
+                            <div class="ticket-box-header" id="ticket-box-type">PRIORITY</div>
+                            <div class="ticket-box-number" id="ticket-box-num">P-001</div>
+                            <div class="ticket-box-color" id="ticket-box-color-label">COLOR: PINK</div>
+                        </div>
+                        
+                        <div class="ticket-divider"></div>
+                        
+                        <div class="ticket-section-title">TRANSACTION INFO</div>
+                        
+                        <!-- Ticket Info Fields -->
+                        <div class="ticket-info-grid">
+                            <div class="info-row">
+                                <span class="info-label">NAME:</span>
+                                <span class="info-val" id="ticket-info-name">Juan Dela Cruz</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">DATE:</span>
+                                <span class="info-val" id="ticket-info-date">08/02/2026</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">TIME:</span>
+                                <span class="info-val" id="ticket-info-time">14:34</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">TYPE:</span>
+                                <span class="info-val" id="ticket-info-type">Priority</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">PURPOSE:</span>
+                                <span class="info-val" id="ticket-info-purpose">Renewal</span>
+                            </div>
+                            <!-- Optional dynamic comment row -->
+                            <div class="info-row" id="ticket-info-comment-row" style="display: none;">
+                                <span class="info-label">COMMENT:</span>
+                                <span class="info-val" id="ticket-info-comment">None</span>
+                            </div>
+                        </div>
+
+                        <!-- Barcode Area (Generated dynamically via scripts) -->
+                        <div class="barcode" id="ticket-barcode"></div>
+
+                        <div class="ticket-disclaimer-box">
+                            Please take your seat and wait for your<br>number appear on the screen
+                        </div>
+
+                        <!-- Thermal ticket footer address information -->
+                        <div class="ticket-footer-address">
+                            154 Areza Town Center, Brgy. Canlalay, Biñan, Laguna.
+                        </div>
+                        <div class="ticket-footer-contact">
+                            Contact Number: +63 222146466 | +63 953643536 | +63 474918939
+                        </div>
+                        <div class="ticket-footer-email">
+                            Office email address: 0420ltocabuyaodo@gmail.com.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts for Logic & Formatting -->
+    <script>
+        // Live Header Clock script (PST UTC+8 / Asia/Manila)
+        function updateClock() {
+            try {
+                const now = new Date();
+                
+                const dateOptions = {
+                    timeZone: 'Asia/Manila',
+                    month: 'long',
+                    day: '2-digit',
+                    year: 'numeric'
+                };
+                const dateStr = now.toLocaleDateString('en-US', dateOptions);
+                
+                const timeOptions = {
+                    timeZone: 'Asia/Manila',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                };
+                let timeStr = now.toLocaleTimeString('en-US', timeOptions);
+                timeStr = timeStr.replace(/\s*[a-zA-Z]+/g, '');
+                
+                document.getElementById('date-display').textContent = dateStr;
+                document.getElementById('time-display').textContent = timeStr;
+            } catch (e) {
+                console.error("Error updating Philippine Time: ", e);
+            }
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Selection variables
+        let selectedPurpose = '';
+        let isPriority = false;
+        let isCommentImportant = false;
+
+        // selectPurpose implementation
+        function selectPurpose(purpose) {
+            const card = document.getElementById('card-' + purpose);
+            
+            if (selectedPurpose === purpose) {
+                // Clicked the already selected card, so UNCLICK it
+                selectedPurpose = '';
+                card.classList.remove('selected');
+                
+                // Disable the Generate button
+                document.getElementById('generate-button').setAttribute('disabled', 'true');
+            } else {
+                // Select this card and deselect all others
+                selectedPurpose = purpose;
+                document.querySelectorAll('.purpose-card').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                card.classList.add('selected');
+                
+                // Enable the Generate button
+                document.getElementById('generate-button').removeAttribute('disabled');
+            }
+        }
+
+        // Toggle Switch functionality (Priority Toggle)
+        const toggleSwitch = document.getElementById('priority-toggle');
+        toggleSwitch.addEventListener('click', function() {
+            isPriority = !isPriority;
+            if (isPriority) {
+                toggleSwitch.classList.add('active');
+            } else {
+                toggleSwitch.classList.remove('active');
+            }
+        });
+
+        // Toggle Importance Circle on comment area
+        function toggleCommentImportant() {
+            isCommentImportant = !isCommentImportant;
+            const circle = document.getElementById('important-circle');
+            if (isCommentImportant) {
+                circle.classList.add('active');
+            } else {
+                circle.classList.remove('active');
+            }
+        }
+
+        // generateTicket implementation
+        function generateTicket() {
+            if (!selectedPurpose) return;
+            
+            let prefix = '';
+            let boxTypeLabel = '';
+            let colorName = '';
+            
+            // Priority override prefix rules
+            if (isPriority) {
+                prefix = 'P';
+                boxTypeLabel = 'PRIORITY';
+                colorName = 'PINK';
+            } else {
+                if (selectedPurpose === 'renewal') {
+                    prefix = 'R';
+                    boxTypeLabel = 'RENEWAL';
+                    colorName = 'GREEN';
+                } else if (selectedPurpose === 'misc') {
+                    prefix = 'M';
+                    boxTypeLabel = 'MISCELLANEOUS';
+                    colorName = 'YELLOW';
+                } else if (selectedPurpose === 'letas') {
+                    prefix = 'L';
+                    boxTypeLabel = 'LETAS';
+                    colorName = 'WHITE';
+                }
+            }
+            
+            // Incremental queue counter using localStorage
+            const counterKey = 'counter_' + prefix;
+            let currentCount = parseInt(localStorage.getItem(counterKey) || '0');
+            currentCount = (currentCount + 1) % 1000;
+            localStorage.setItem(counterKey, currentCount);
+            
+            const formattedNum = String(currentCount).padStart(3, '0');
+            const ticketId = `${prefix}-${formattedNum}`;
+            
+            // Format Manila Stamp
+            const now = new Date();
+            const dateOptions = {
+                timeZone: 'Asia/Manila',
+                month: '2-digit',
+                day: '2-digit',
+                year: 'numeric'
+            };
+            const dateStr = now.toLocaleDateString('en-US', dateOptions);
+            
+            const timeOptions = {
+                timeZone: 'Asia/Manila',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            };
+            const timeStr = now.toLocaleTimeString('en-US', timeOptions);
+            
+            // Update Ticket Preview Fields
+            document.getElementById('ticket-box-type').textContent = boxTypeLabel;
+            document.getElementById('ticket-box-num').textContent = ticketId;
+            document.getElementById('ticket-box-color-label').textContent = 'COLOR: ' + colorName;
+            
+            const numBox = document.getElementById('ticket-num-box');
+            numBox.className = 'ticket-number-box ticket-theme-' + colorName.toLowerCase();
+            
+            const nameInputVal = document.getElementById('name-input').value.trim() || 'Juan Dela Cruz';
+            document.getElementById('ticket-info-name').textContent = nameInputVal;
+            document.getElementById('ticket-info-date').textContent = dateStr;
+            document.getElementById('ticket-info-time').textContent = timeStr;
+            document.getElementById('ticket-info-type').textContent = isPriority ? 'Priority' : 'Regular';
+            
+            let purposeLabel = selectedPurpose.charAt(0).toUpperCase() + selectedPurpose.slice(1);
+            if (selectedPurpose === 'misc') purposeLabel = 'Miscellaneous';
+            document.getElementById('ticket-info-purpose').textContent = purposeLabel;
+            
+            // Dynamic comment text insertion
+            const commentVal = document.getElementById('comment-input').value.trim();
+            const commentRow = document.getElementById('ticket-info-comment-row');
+            if (commentVal) {
+                commentRow.style.display = 'flex';
+                const importantSuffix = isCommentImportant ? ' (IMPORTANT)' : '';
+                document.getElementById('ticket-info-comment').textContent = commentVal + importantSuffix;
+                if (isCommentImportant) {
+                    document.getElementById('ticket-info-comment').style.color = '#e60000';
+                    document.getElementById('ticket-info-comment').style.fontWeight = 'bold';
+                } else {
+                    document.getElementById('ticket-info-comment').style.color = 'inherit';
+                    document.getElementById('ticket-info-comment').style.fontWeight = 'normal';
+                }
+            } else {
+                commentRow.style.display = 'none';
+            }
+            
+            // Generate Custom Barcode based on ticket numbering and timestamp
+            const barcodeData = `${ticketId}-${dateStr.replace(/\//g, '')}-${timeStr.replace(/:/g, '')}`;
+            generateBarcode(barcodeData);
+            
+            // Reveal ticket details
+            document.getElementById('no-preview-placeholder').style.display = 'none';
+            document.getElementById('ticket-paper').style.display = 'block';
+            
+            // Reveal and trigger left-to-right fill animation on print button
+            const printBtn = document.getElementById('print-button');
+            printBtn.style.display = 'block';
+            setTimeout(() => {
+                printBtn.classList.add('animate-fill');
+            }, 50);
+        }
+
+        // Procedural generator to output vertical bars dynamically
+        function generateBarcode(value) {
+            const barcodeContainer = document.getElementById('ticket-barcode');
+            barcodeContainer.innerHTML = '';
+            
+            const seededValue = value + "LTOQUEUESYSTEM";
+            for (let i = 0; i < 48; i++) {
+                const charCode = seededValue.charCodeAt(i % seededValue.length);
+                const val = (charCode + (i * 3)) % 4;
+                
+                const bar = document.createElement('div');
+                if (val === 0) {
+                    bar.className = 'bar-thin';
+                } else if (val === 1) {
+                    bar.className = 'bar-medium';
+                } else if (val === 2) {
+                    bar.className = 'bar-thick';
+                } else {
+                    bar.className = 'bar-space';
+                }
+                barcodeContainer.appendChild(bar);
+            }
+        }
+
+        // Print Ticket Action & Page Reset Logic
+        function printTicket() {
+            const ticketNum = document.getElementById('ticket-box-num').textContent;
+            
+            // === Save ticket object to shared localStorage queue for Window B ===
+            const ticketObj = {
+                id:      ticketNum,
+                name:    document.getElementById('ticket-info-name').textContent,
+                date:    document.getElementById('ticket-info-date').textContent,
+                time:    document.getElementById('ticket-info-time').textContent,
+                type:    document.getElementById('ticket-info-type').textContent,
+                purpose: document.getElementById('ticket-info-purpose').textContent,
+                comment: document.getElementById('ticket-info-comment').textContent || '',
+                status:  'pending',
+                printedAt: Date.now()
+            };
+            const queue = JSON.parse(localStorage.getItem('lto_ticket_queue') || '[]');
+            queue.push(ticketObj);
+            localStorage.setItem('lto_ticket_queue', JSON.stringify(queue));
+
+            // === Update global stats ===
+            const stats = JSON.parse(localStorage.getItem('lto_stats') || '{"entries":0,"accomplished":0,"hourly":[]}');
+            stats.entries = (stats.entries || 0) + 1;
+            // Build hourly bucket (0-23)
+            const nowHr = new Date().getHours();
+            if (!Array.isArray(stats.hourly)) stats.hourly = [];
+            while (stats.hourly.length <= nowHr) stats.hourly.push(0);
+            stats.hourly[nowHr] = (stats.hourly[nowHr] || 0) + 1;
+            localStorage.setItem('lto_stats', JSON.stringify(stats));
+            // =====================================================================
+
+            // Show toast in lower right indicating print success
+            showToast(`Printing Ticket ${ticketNum}... Please take your slip.`, "login");
+            
+            // Wait for toast duration, then reset registration page inputs
+            setTimeout(() => {
+                const printBtn = document.getElementById('print-button');
+                printBtn.classList.remove('animate-fill');
+                printBtn.style.display = 'none';
+                
+                selectedPurpose = '';
+                document.querySelectorAll('.purpose-card').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                
+                isPriority = false;
+                document.getElementById('priority-toggle').classList.remove('active');
+                
+                isCommentImportant = false;
+                document.getElementById('important-circle').classList.remove('active');
+                document.getElementById('comment-input').value = '';
+                document.getElementById('name-input').value = '';
+                
+                document.getElementById('generate-button').setAttribute('disabled', 'true');
+                
+                document.getElementById('no-preview-placeholder').style.display = 'flex';
+                document.getElementById('ticket-paper').style.display = 'none';
+            }, 1800);
+        }
+
+        // Action Toast Alert implementation
+        function showToast(message, type) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            
+            // Trigger opacity slide
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 50);
+            
+            // Dismiss toast
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 1800);
+        }
+
+        // Logout handler
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showToast('Logging out\u2026 Redirecting.', 'logout');
+            setTimeout(function() { window.location.href = 'index.html'; }, 1800);
+        });
+    </script>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toast-container"></div>
+</body>
+</html>

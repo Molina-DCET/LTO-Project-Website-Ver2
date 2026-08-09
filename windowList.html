@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LTO Cabuyao District Office - Windows</title>
+    <meta name="description"
+        content="Land Transportation Office Cabuyao District Office Queuing System Window Selection">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Header Section -->
+    <header class="header">
+        <div class="header-left">
+            <img src="img/logo.png" alt="LTO Logo" class="header-logo">
+            <div class="header-title-container">
+                <span class="header-title">LAND TRANSPORTATION OFFICE</span>
+                <span class="header-subtitle">CABUYAO DISTRICT OFFICE</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="time-container">
+                <span class="date-text" id="date-display">August 02, 2026</span>
+                <span class="time-text" id="time-display">14:34</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero / Windows Section -->
+    <main class="hero">
+        <!-- Faint Watermark Logo in Background -->
+        <img src="img/logo.png" alt="LTO Logo Watermark" class="hero-watermark">
+
+        <div class="hero-content">
+            <h1 class="hero-title">WINDOWS</h1>
+
+            <!-- Grid containing 15 buttons -->
+            <div class="windows-grid">
+                <!-- Row 1: A to E -->
+                <a href="windowA.html" class="window-btn btn-window">
+                    <span class="window-btn-text">A</span>
+                </a>
+                <a href="windowB.html" class="window-btn btn-window">
+                    <span class="window-btn-text">B</span>
+                </a>
+                <a href="windowC.html" class="window-btn btn-window">
+                    <span class="window-btn-text">C</span>
+                </a>
+                <a href="windowD.html" class="window-btn btn-window">
+                    <span class="window-btn-text">D</span>
+                </a>
+                <a href="windowE.html" class="window-btn btn-window">
+                    <span class="window-btn-text">E</span>
+                </a>
+
+                <!-- Row 2: F to J -->
+                <a href="windowF.html" class="window-btn btn-window">
+                    <span class="window-btn-text">F</span>
+                </a>
+                <a href="windowG.html" class="window-btn btn-window">
+                    <span class="window-btn-text">G</span>
+                </a>
+                <a href="windowH.html" class="window-btn btn-window">
+                    <span class="window-btn-text">H</span>
+                </a>
+                <a href="windowI.html" class="window-btn btn-window">
+                    <span class="window-btn-text">I</span>
+                </a>
+                <a href="windowJ.html" class="window-btn btn-window">
+                    <span class="window-btn-text">J</span>
+                </a>
+
+                <!-- Row 3: L, M, N, Cashier, Control Panel -->
+                <a href="windowL.html" class="window-btn btn-window">
+                    <span class="window-btn-text">L</span>
+                </a>
+                <a href="windowM.html" class="window-btn btn-window">
+                    <span class="window-btn-text">M</span>
+                </a>
+                <a href="windowN.html" class="window-btn btn-window">
+                    <span class="window-btn-text">N</span>
+                </a>
+                <a href="cashier.html" class="window-btn btn-cashier btn-text-long">
+                    <span class="window-btn-text">CASHIER</span>
+                </a>
+                <a href="controlPanel.html" class="window-btn btn-control-panel btn-text-long">
+                    <span class="window-btn-text">CONTROL<br>PANEL</span>
+                </a>
+            </div>
+
+            <!-- Logout Button with Glass Texture -->
+            <a href="#" class="logout-btn" id="logout-button">LOG OUT</a>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script>
+        // Live Clock script (Philippine Standard Time UTC+8 / Asia/Manila)
+        function updateClock() {
+            try {
+                const now = new Date();
+
+                // Format date in Manila timezone
+                const dateOptions = {
+                    timeZone: 'Asia/Manila',
+                    month: 'long',
+                    day: '2-digit',
+                    year: 'numeric'
+                };
+                const dateStr = now.toLocaleDateString('en-US', dateOptions);
+
+                // Format time in Manila timezone (military / 24-hour style)
+                const timeOptions = {
+                    timeZone: 'Asia/Manila',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit', // Showing seconds in window list matches visual feedback of clock live updating
+                    hour12: false
+                };
+                let timeStr = now.toLocaleTimeString('en-US', timeOptions);
+
+                // Clean up non-numeric letters (e.g. AM/PM check)
+                timeStr = timeStr.replace(/\s*[a-zA-Z]+/g, '');
+
+                // Update elements
+                document.getElementById('date-display').textContent = dateStr;
+                document.getElementById('time-display').textContent = timeStr;
+            } catch (e) {
+                console.error("Error updating Philippine Time: ", e);
+            }
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Logout Event handler & Toast notification
+        const logoutButton = document.getElementById('logout-button');
+        logoutButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            showToast("Successfully logged out! Redirecting...", "logout", function () {
+                window.location.href = 'index.html';
+            });
+        });
+
+        function showToast(message, type, callback) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 50);
+
+            // Hide and execute callback
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                    if (callback) callback();
+                }, 300);
+            }, 1500);
+        }
+    </script>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toast-container"></div>
+</body>
+
+</html>

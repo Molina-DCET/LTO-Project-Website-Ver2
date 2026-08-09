@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LTO Cabuyao District Office - Admin Login</title>
+    <meta name="description" content="Land Transportation Office Cabuyao District Office Queuing System Admin Login">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="header">
+        <div class="header-left">
+            <img src="img/logo.png" alt="LTO Logo" class="header-logo">
+            <div class="header-title-container">
+                <span class="header-title">LAND TRANSPORTATION OFFICE</span>
+                <span class="header-subtitle">CABUYAO DISTRICT OFFICE</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="time-container">
+                <span class="date-text" id="date-display">August 02, 2026</span>
+                <span class="time-text" id="time-display">14:34:33</span>
+            </div>
+            <a href="index.html" class="admin-btn" id="home-button">HOME</a>
+        </div>
+    </header>
+
+    <!-- Hero / Login Section -->
+    <main class="hero">
+        <!-- Faint Watermark Logo in Background -->
+        <img src="img/logo.png" alt="LTO Logo Watermark" class="hero-watermark">
+        
+        <div class="hero-content">
+            <h1 class="hero-title">ADMIN SECTION</h1>
+            
+            <!-- Login Form Container -->
+            <form class="login-form" id="login-form" onsubmit="event.preventDefault();">
+                <!-- User Field -->
+                <div class="input-group">
+                    <input type="text" id="username" class="user-input" placeholder=" " required autocomplete="off">
+                    <label for="username">USER</label>
+                </div>
+                
+                <!-- Password Field -->
+                <div class="input-group">
+                    <input type="password" id="password" placeholder=" " required autocomplete="current-password">
+                    <label for="password">PASSWORD</label>
+                    <img src="img/eye.png" alt="Toggle Password Visibility" class="toggle-password" id="toggle-password-icon">
+                </div>
+                
+                <!-- Login Button with Glass Texture -->
+                <button type="submit" class="login-btn">LOGIN</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script>
+        // Live Clock script (Philippine Standard Time UTC+8 / Asia/Manila)
+        function updateClock() {
+            try {
+                const now = new Date();
+                
+                // Format date in Manila timezone
+                const dateOptions = {
+                    timeZone: 'Asia/Manila',
+                    month: 'long',
+                    day: '2-digit',
+                    year: 'numeric'
+                };
+                const dateStr = now.toLocaleDateString('en-US', dateOptions);
+                
+                // Format time in Manila timezone (military / 24-hour style)
+                const timeOptions = {
+                    timeZone: 'Asia/Manila',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                };
+                let timeStr = now.toLocaleTimeString('en-US', timeOptions);
+                
+                // Clean up non-numeric letters (e.g. AM/PM check)
+                timeStr = timeStr.replace(/\s*[a-zA-Z]+/g, '');
+                
+                // Update elements
+                document.getElementById('date-display').textContent = dateStr;
+                document.getElementById('time-display').textContent = timeStr;
+            } catch (e) {
+                console.error("Error updating Philippine Time: ", e);
+            }
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Show/Hide Password Script
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggle-password-icon');
+
+        toggleIcon.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.src = 'img/eye-off-sharp.png';
+                toggleIcon.alt = 'Hide Password';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.src = 'img/eye.png';
+                toggleIcon.alt = 'Show Password';
+            }
+        });
+
+        // Form Submit & Toast Notification Script
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            showToast("Login Successful! Redirecting...", "login", function() {
+                window.location.href = 'windowList.html';
+            });
+        });
+
+        function showToast(message, type, callback) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 50);
+            
+            // Hide and execute callback
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                    if (callback) callback();
+                }, 300);
+            }, 1500);
+        }
+    </script>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toast-container"></div>
+</body>
+</html>
