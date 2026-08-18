@@ -1455,8 +1455,16 @@
         /* ===================================================================
            CALLING LOGIC
         =================================================================== */
+        function fileNo(id) {
+            if (!id) return '\u2014';
+            var h = 0;
+            for (var i = 0; i < id.length; i++) h += id.charCodeAt(i);
+            return id.replace('-', '') + '-' + ((h * 4317) % 90000000 + 10000000);
+        }
+
         function refreshCallingUI() {
             var t = currentCalling;
+            document.getElementById('txn-file').textContent = t ? fileNo(t.id) : '\u2014';
             document.getElementById('txn-name').textContent = t ? t.name : '\u2014';
             document.getElementById('txn-date').textContent = t ? t.date : '\u2014';
             document.getElementById('txn-time').textContent = t ? t.time : '\u2014';
