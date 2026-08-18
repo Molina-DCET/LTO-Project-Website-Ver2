@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LTO Cabuyao - View Queuing System</title>
+    <meta name="description" content="Land Transportation Office Cabuyao District Office View Queuing Display">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ===================================================================
+           VIEW QUEUING PAGE CUSTOM STYLES
+           =================================================================== */
+
+        /* Body & Background */
+        body.view-queuing-body {
+            background-color: #002ea1;
+            background: linear-gradient(135deg, #001f75 0%, #0036b3 50%, #001859 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header overrides */
+        .vq-header {
+            background-color: #0047FF;
+            height: 90px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 35px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 20;
+        }
+
+        .home-btn {
+            background-color: #ffffff;
+            color: #0047FF;
+            font-family: var(--font-family);
+            font-size: 1.35rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            padding: 8px 36px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+        }
+
+        .home-btn:hover {
+            background-color: #f0f4ff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Audio Unmute Banner */
+        .audio-banner {
+            background: linear-gradient(90deg, #ff9800, #f57c00);
+            color: #ffffff;
+            text-align: center;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            z-index: 15;
+            transition: opacity 0.3s ease;
+        }
+
+        .audio-banner.hidden {
+            display: none;
+        }
+
+        /* Main Container Layout */
+        .vq-main {
+            position: relative;
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: 1.15fr 0.95fr;
+            gap: 24px;
+            padding: 24px 30px;
+            max-width: 1920px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Watermark Background */
+        .vq-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            max-width: 850px;
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 0;
+            object-fit: contain;
+        }
+
+        /* Left Column: Cashier & Other Windows Calling */
+        .vq-left-col {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Card Container (Light glossy backdrop matching reference image) */
+        .vq-container-box {
+            background: linear-gradient(180deg, #ffffff 0%, #eef2fa 100%);
+            border-radius: 24px;
+            padding: 20px 24px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .vq-box-title {
+            color: #000000;
+            font-size: 2.2rem;
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Cashier 2x2 Category Grid */
+        .cashier-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 18px;
+            min-height: 380px;
+        }
+
+        /* Category Card Styling */
+        .cat-card {
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+        }
+
+        .cat-card .ticket-num {
+            font-size: clamp(3.2rem, 5vw, 4.8rem);
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin: auto 0;
+            text-align: center;
+            line-height: 1;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        .cat-card .cat-label {
+            font-size: 1.25rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Category Color Rules */
+        /* Renewal: Green */
+        .cat-card.cat-renewal {
+            background: linear-gradient(145deg, #00e676 0%, #00b0ff 0%, #00c853 100%);
+            background-color: #00e676;
+            color: #000000;
+        }
+
+        .cat-card.cat-renewal .cat-label {
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .cat-card.cat-renewal .ticket-num {
+            color: #000000;
+        }
+
+        /* Miscellaneous: Yellow */
+        .cat-card.cat-misc {
+            background: linear-gradient(145deg, #ffff00 0%, #ffd600 100%);
+            background-color: #ffd600;
+            color: #000000;
+        }
+
+        .cat-card.cat-misc .cat-label {
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .cat-card.cat-misc .ticket-num {
+            color: #000000;
+        }
+
+        /* LETAS: White */
+        .cat-card.cat-letas {
+            background: linear-gradient(145deg, #ffffff 0%, #e0e0e0 100%);
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .cat-card.cat-letas .cat-label {
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .cat-card.cat-letas .ticket-num {
+            color: #000000;
+        }
+
+        /* Priority: Pink */
+        .cat-card.cat-priority {
+            background: linear-gradient(145deg, #ff007f 0%, #d5006d 100%);
+            background-color: #ff007f;
+            color: #000000;
+        }
+
+        .cat-card.cat-priority .cat-label {
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .cat-card.cat-priority .ticket-num {
+            color: #000000;
+        }
+
+        /* Idle State for Cards */
+        .cat-card.idle .ticket-num {
+            opacity: 0.15;
+        }
+
+        /* Lowered / Softened Calling Animation (Subtle Green Pulsing Glow) */
+        @keyframes callFlashGreen {
+            0% {
+                transform: scale(1);
+                filter: brightness(1);
+                box-shadow: 0 4px 12px rgba(0, 230, 118, 0.2);
+            }
+
+            50% {
+                transform: scale(1.025);
+                filter: brightness(1.15);
+                box-shadow: 0 6px 20px rgba(0, 230, 118, 0.5);
+            }
+
+            100% {
+                transform: scale(1);
+                filter: brightness(1);
+                box-shadow: 0 4px 12px rgba(0, 230, 118, 0.2);
+            }
+        }
+
+        .flash-green {
+            animation: callFlashGreen 2s ease-in-out infinite;
+        }
+
+        /* Lowered / Softened Calling Again Animation (Subtle RED Pulsing Glow for Recall) */
+        @keyframes callFlashRed {
+            0% {
+                transform: scale(1);
+                background: #d32f2f !important;
+                filter: brightness(1);
+                box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+            }
+
+            50% {
+                transform: scale(1.025);
+                background: #ff1744 !important;
+                filter: brightness(1.18);
+                box-shadow: 0 6px 22px rgba(255, 23, 68, 0.6);
+                color: #fff !important;
+            }
+
+            100% {
+                transform: scale(1);
+                background: #d32f2f !important;
+                filter: brightness(1);
+                box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+            }
+        }
+
+        .flash-red {
+            animation: callFlashRed 2s ease-in-out infinite !important;
+        }
+
+        .flash-red .ticket-num,
+        .flash-red .cat-label {
+            color: #ffffff !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+        }
+
+        /* Bottom Section: NOW CALLING PLEASE GO TO */
+        .now-calling-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .now-calling-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+            padding-left: 40px;
+        }
+
+        .nc-badge {
+            background-color: #0047FF;
+            color: #ffffff;
+            font-size: 1.15rem;
+            font-weight: 900;
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: inline-block;
+            width: fit-content;
+            letter-spacing: 1px;
+            box-shadow: 0 3px 6px rgba(0, 71, 255, 0.3);
+        }
+
+        .nc-window-name {
+            font-size: clamp(2.4rem, 3.8vw, 3.4rem);
+            font-weight: 900;
+            color: #000000;
+            line-height: 1.1;
+            letter-spacing: 1px;
+        }
+
+        .nc-card-wrap {
+            height: 100%;
+            min-height: 190px;
+            display: flex;
+        }
+
+        .nc-card-wrap .cat-card {
+            width: 100%;
+        }
+
+        /* Right Column: 2 Side-by-Side On-Hold Panels */
+        .vq-right-col {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .hold-panel {
+            background: linear-gradient(180deg, #ffffff 0%, #eef2fa 100%);
+            border-radius: 24px;
+            padding: 20px 18px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .hold-panel-header {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .hold-main-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #000000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
+
+        .hold-cat-subtitle {
+            font-size: 1.4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        /* Hold Subtitle Colors */
+        .hold-cat-subtitle.cat-renewal {
+            color: #008736;
+            background: rgba(0, 230, 118, 0.15);
+        }
+
+        .hold-cat-subtitle.cat-misc {
+            color: #b78100;
+            background: rgba(255, 214, 0, 0.2);
+        }
+
+        .hold-cat-subtitle.cat-letas {
+            color: #424242;
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        .hold-cat-subtitle.cat-priority {
+            color: #c2185b;
+            background: rgba(255, 0, 127, 0.15);
+        }
+
+        /* On-Hold Table */
+        .hold-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .hold-table th {
+            font-size: 1rem;
+            font-weight: 900;
+            color: #000000;
+            padding: 10px 8px;
+            border-bottom: 3px solid #000000;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hold-table th:first-child {
+            text-align: left;
+        }
+
+        .hold-table th:last-child {
+            text-align: right;
+        }
+
+        .hold-table td {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: #000000;
+            padding: 12px 8px;
+            border-bottom: 1.5px solid rgba(0, 0, 0, 0.12);
+        }
+
+        .hold-table td:first-child {
+            text-align: left;
+        }
+
+        .hold-table td:last-child {
+            text-align: right;
+        }
+
+        .hold-empty-row {
+            text-align: center !important;
+            color: #888888 !important;
+            font-weight: 600 !important;
+            padding: 30px 10px !important;
+            font-style: italic;
+        }
+
+        /* Fade Animation for 10s Rotation */
+        .rotating-fade {
+            opacity: 0.2;
+            transform: scale(0.98);
+        }
+
+        /* Interactive Floating Test Panel */
+        .test-panel {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            z-index: 1000;
+            background: #ffffff;
+            color: #333;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid #0047FF;
+            padding: 12px 16px;
+            font-family: sans-serif;
+            max-width: 380px;
+            transition: all 0.3s ease;
+        }
+
+        .test-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-bottom: 8px;
+            color: #0047FF;
+        }
+
+        .test-panel-body {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .test-btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .test-btn {
+            background: #0047FF;
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .test-btn:hover {
+            background: #0034CC;
+        }
+
+        .test-btn.amber {
+            background: #ff9800;
+        }
+
+        .test-btn.amber:hover {
+            background: #e65100;
+        }
+
+        .test-btn.danger {
+            background: #d32f2f;
+        }
+
+        .test-btn.danger:hover {
+            background: #9a0007;
+        }
+
+        .test-panel.collapsed .test-panel-body {
+            display: none;
+        }
+
+        .test-panel.collapsed {
+            padding: 8px 12px;
+        }
+
+        /* Responsive Tweaks */
+        @media (max-width: 1280px) {
+            .vq-main {
+                grid-template-columns: 1fr;
+            }
+
+            .vq-right-col {
+                min-height: 400px;
+            }
+        }
+    </style>
+</head>
+
+<body class="view-queuing-body">
+
+    <!-- Header Section -->
+    <header class="vq-header">
+        <div class="header-left">
+            <img src="img/logo.png" alt="LTO Logo" class="header-logo">
+            <div class="header-title-container">
+                <span class="header-title">LAND TRANSPORTATION OFFICE</span>
+                <span class="header-subtitle">CABUYAO DISTRICT OFFICE</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="time-container">
+                <span class="date-text" id="date-display">August 02, 2026</span>
+                <span class="time-text" id="time-display">14:34</span>
+            </div>
+            <a href="index.html" class="home-btn" id="home-button">HOME</a>
+        </div>
+    </header>
+
+    <!-- Audio Unmute Prompt Banner (for Browser Autoplay Security) -->
+    <div class="audio-banner" id="audio-banner" onclick="enableAudioContext()">
+        <span>🔊 Click anywhere on this banner or page to enable Voice & Sound Announcements</span>
+    </div>
+
+    <!-- Main View Queuing Display Area -->
+    <main class="vq-main">
+        <!-- Faint LTO Logo Watermark in Background -->
+        <img src="img/logo.png" alt="LTO Logo Watermark" class="vq-watermark">
+
+        <!-- Left Column: Cashier & Other Windows Calling -->
+        <div class="vq-left-col">
+
+            <!-- Cashier Calling Box -->
+            <div class="vq-container-box">
+                <div class="vq-box-title">WINDOW K/L(Cashier)</div>
+                <div class="cashier-grid">
+
+                    <!-- Renewal Container -->
+                    <div class="cat-card cat-renewal idle" id="cashier-card-renewal">
+                        <div class="ticket-num" id="cashier-num-renewal">---</div>
+                        <div class="cat-label">RENEWAL</div>
+                    </div>
+
+                    <!-- Miscellaneous Container -->
+                    <div class="cat-card cat-misc idle" id="cashier-card-misc">
+                        <div class="ticket-num" id="cashier-num-misc">---</div>
+                        <div class="cat-label">MISCELLANEOUS</div>
+                    </div>
+
+                    <!-- LETAS Container -->
+                    <div class="cat-card cat-letas idle" id="cashier-card-letas">
+                        <div class="ticket-num" id="cashier-num-letas">---</div>
+                        <div class="cat-label">LETAS</div>
+                    </div>
+
+                    <!-- Priority Container -->
+                    <div class="cat-card cat-priority idle" id="cashier-card-priority">
+                        <div class="ticket-num" id="cashier-num-priority">---</div>
+                        <div class="cat-label">PRIORITY</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Other Windows Calling Box -->
+            <div class="vq-container-box">
+                <div class="now-calling-box">
+
+                    <div class="now-calling-info">
+                        <div class="nc-badge">NOW CALLING PLEASE GO TO</div>
+                        <div class="nc-window-name" id="nc-window-title">WINDOW ?</div>
+                    </div>
+
+                    <div class="nc-card-wrap">
+                        <div class="cat-card cat-renewal idle" id="nc-cat-card">
+                            <div class="ticket-num" id="nc-ticket-num">---</div>
+                            <div class="cat-label" id="nc-cat-label">STANDBY</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: 2 On-Hold Panels (Auto Rotates every 10 seconds) -->
+        <div class="vq-right-col">
+
+            <!-- On-Hold Panel 1 -->
+            <div class="hold-panel" id="hold-panel-1">
+                <div class="hold-panel-header">
+                    <div class="hold-main-title">ON HOLDS</div>
+                    <div class="hold-cat-subtitle cat-renewal" id="hold-cat-1">RENEWAL</div>
+                </div>
+                <table class="hold-table">
+                    <thead>
+                        <tr>
+                            <th>TICKET NO</th>
+                            <th>GO TO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hold-body-1">
+                        <tr>
+                            <td colspan="2" class="hold-empty-row">No tickets on hold</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- On-Hold Panel 2 -->
+            <div class="hold-panel" id="hold-panel-2">
+                <div class="hold-panel-header">
+                    <div class="hold-main-title">ON HOLDS</div>
+                    <div class="hold-cat-subtitle cat-misc" id="hold-cat-2">MISCELLANEOUS</div>
+                </div>
+                <table class="hold-table">
+                    <thead>
+                        <tr>
+                            <th>TICKET NO</th>
+                            <th>GO TO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hold-body-2">
+                        <tr>
+                            <td colspan="2" class="hold-empty-row">No tickets on hold</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Floating Interactive Test Control Bar -->
+    <div class="test-panel" id="test-panel">
+        <div class="test-panel-header" onclick="toggleTestPanel()">
+            <span>🧪 Demo & Call Test Tools</span>
+            <span id="test-panel-icon">▼</span>
+        </div>
+        <div class="test-panel-body">
+            <div class="test-btn-group">
+                <button class="test-btn" onclick="testCall('cashier', 'R-015', 'renewal', false)">Call Cashier
+                    R-015</button>
+                <button class="test-btn" onclick="testCall('windowD', 'R-021', 'renewal', false)">Call Window D
+                    R-021</button>
+            </div>
+            <div class="test-btn-group">
+                <button class="test-btn amber" onclick="testCall('cashier', 'R-015', 'renewal', true)">Call Again
+                    Cashier</button>
+                <button class="test-btn amber" onclick="testCall('windowD', 'R-021', 'renewal', true)">Call Again Window
+                    D</button>
+            </div>
+            <div class="test-btn-group">
+                <button class="test-btn" onclick="testCall('windowB', 'M-002', 'miscellaneous', false)">Call Window B
+                    M-002</button>
+                <button class="test-btn" onclick="testCall('windowC', 'P-001', 'priority', false)">Call Window C
+                    P-001</button>
+            </div>
+            <div class="test-btn-group">
+                <button class="test-btn danger" onclick="clearActiveCall('cashier')">Clear Cashier Call</button>
+                <button class="test-btn danger"
+                    onclick="clearActiveCall('windowD'); clearActiveCall('windowB'); clearActiveCall('windowC');">Clear
+                    Window Calls</button>
+            </div>
+            <button class="test-btn danger" onclick="seedSampleHoldData()">Populate Sample On-Hold Data</button>
+        </div>
+    </div>
+
+    <!-- Live Clock Script -->
+    <script>
+        function updateClock() {
+            try {
+                const now = new Date();
+                const dateOptions = { timeZone: 'Asia/Manila', month: 'long', day: '2-digit', year: 'numeric' };
+                const dateStr = now.toLocaleDateString('en-US', dateOptions);
+                const timeOptions = { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+                let timeStr = now.toLocaleTimeString('en-US', timeOptions).replace(/\s*[a-zA-Z]+/g, '');
+
+                document.getElementById('date-display').textContent = dateStr;
+                document.getElementById('time-display').textContent = timeStr;
+            } catch (e) { console.error("Clock update error:", e); }
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+
+    <!-- Queue Engine, Audio Synthesizer & Visual Loop Script -->
+    <script>
+        /* ===================================================================
+           1. AUDIO SYNTHESIZER & SPEECH ANNOUNCEMENT ENGINE
+           =================================================================== */
+        let audioCtx = null;
+        let audioEnabled = false;
+
+        function enableAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) audioCtx = new AudioContext();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            audioEnabled = true;
+            document.getElementById('audio-banner').classList.add('hidden');
+        }
+        document.addEventListener('click', enableAudioContext, { once: true });
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function playTripleChime() {
+            return new Promise((resolve) => {
+                try {
+                    if (!audioCtx) {
+                        const AudioContext = window.AudioContext || window.webkitAudioContext;
+                        if (AudioContext) audioCtx = new AudioContext();
+                    }
+                    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+
+                    const now = audioCtx ? audioCtx.currentTime : 0;
+                    const chimes = [0, 0.35, 0.70];
+
+                    chimes.forEach((d) => {
+                        if (!audioCtx) return;
+                        const osc1 = audioCtx.createOscillator();
+                        const osc2 = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+
+                        osc1.type = 'sine';
+                        osc2.type = 'sine';
+                        osc1.frequency.setValueAtTime(659.25, now + d);
+                        osc2.frequency.setValueAtTime(987.77, now + d);
+
+                        gain.gain.setValueAtTime(0.001, now + d);
+                        gain.gain.exponentialRampToValueAtTime(0.35, now + d + 0.03);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + d + 0.32);
+
+                        osc1.connect(gain);
+                        osc2.connect(gain);
+                        gain.connect(audioCtx.destination);
+
+                        osc1.start(now + d);
+                        osc2.start(now + d);
+                        osc1.stop(now + d + 0.33);
+                        osc2.stop(now + d + 0.33);
+                    });
+
+                    setTimeout(resolve, 1150);
+                } catch (e) {
+                    console.warn("Audio Context playback error:", e);
+                    setTimeout(resolve, 500);
+                }
+            });
+        }
+
+        const audioQueue = [];
+        let isAudioAnnouncing = false;
+        const activeCallsMap = {};
+        const lastCallTimestamps = {};
+        let visualLoopIndex = 0;
+
+        function queueAudioAnnouncement(callData) {
+            audioQueue.push(callData);
+            if (!isAudioAnnouncing) {
+                processAudioQueue();
+            }
+        }
+
+        function speakText(text) {
+            return new Promise((resolve) => {
+                if (!('speechSynthesis' in window)) {
+                    setTimeout(resolve, 1500);
+                    return;
+                }
+
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.88;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+
+                const voices = window.speechSynthesis.getVoices();
+                const preferredVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Zira') || v.name.includes('Samantha')));
+                if (preferredVoice) utterance.voice = preferredVoice;
+
+                utterance.onend = () => setTimeout(resolve, 350);
+                utterance.onerror = () => setTimeout(resolve, 350);
+
+                window.speechSynthesis.speak(utterance);
+            });
+        }
+
+        function formatTicketForSpeech(ticketId) {
+            if (!ticketId) return "";
+            return ticketId.replace('-', ' ');
+        }
+
+        async function processAudioQueue() {
+            if (audioQueue.length === 0) {
+                isAudioAnnouncing = false;
+                syncScreenDisplay();
+                return;
+            }
+
+            isAudioAnnouncing = true;
+            const currentCall = audioQueue.shift();
+
+            renderSingleCallUI(currentCall);
+
+            const spokenTicket = formatTicketForSpeech(currentCall.ticketId);
+            let speechPhrase = "";
+            if (currentCall.isCashier) {
+                speechPhrase = "Go to Window K/L (Cashier), " + spokenTicket;
+            } else {
+                speechPhrase = spokenTicket + ", Go to " + currentCall.windowName;
+            }
+
+            for (let rep = 0; rep < 3; rep++) {
+                await playTripleChime();
+                await speakText(speechPhrase);
+                if (rep < 2) await delay(400);
+            }
+
+            await delay(5000);
+
+            if (audioQueue.length > 0) {
+                processAudioQueue();
+            } else {
+                isAudioAnnouncing = false;
+                syncScreenDisplay();
+            }
+        }
+
+        /* ===================================================================
+           2. SILENT VISUAL DISPLAY LOOP & SCREEN CLEARANCE
+           =================================================================== */
+
+        function getCategoryInfo(ticketId, purpose, type) {
+            const id = (ticketId || '').toUpperCase();
+            const purp = (purpose || '').toLowerCase();
+            const t = (type || '').toLowerCase();
+
+            if (t === 'priority' || id.startsWith('P-')) {
+                return { key: 'priority', name: 'PRIORITY', cssClass: 'cat-priority' };
+            }
+            if (purp === 'renewal' || id.startsWith('R-')) {
+                return { key: 'renewal', name: 'RENEWAL', cssClass: 'cat-renewal' };
+            }
+            if (purp === 'miscellaneous' || purp === 'misc' || id.startsWith('M-')) {
+                return { key: 'misc', name: 'MISCELLANEOUS', cssClass: 'cat-misc' };
+            }
+            if (purp === 'letas' || id.startsWith('L-')) {
+                return { key: 'letas', name: 'LETAS', cssClass: 'cat-letas' };
+            }
+            return { key: 'renewal', name: 'RENEWAL', cssClass: 'cat-renewal' };
+        }
+
+        function formatWindowName(wId) {
+            if (!wId) return 'WINDOW ?';
+            const lower = wId.toLowerCase();
+            if (lower === 'cashier' || lower === 'windowk' || lower === 'windowl') return 'WINDOW K/L (Cashier)';
+            if (lower.startsWith('window')) {
+                return 'WINDOW ' + wId.replace(/^window/i, '').toUpperCase();
+            }
+            return wId.toUpperCase();
+        }
+
+        function renderCashierSection(activeCashierCalls) {
+            ['renewal', 'misc', 'letas', 'priority'].forEach(catKey => {
+                const activeCallForCat = (activeCashierCalls || []).find(c => {
+                    const info = getCategoryInfo(c.ticketId, c.purpose, c.type);
+                    return info.key === catKey;
+                });
+
+                const cardEl = document.getElementById('cashier-card-' + catKey);
+                const numEl = document.getElementById('cashier-num-' + catKey);
+
+                if (cardEl && numEl) {
+                    if (activeCallForCat) {
+                        numEl.textContent = activeCallForCat.ticketId;
+                        cardEl.classList.remove('idle', 'flash-green', 'flash-red');
+                        void cardEl.offsetWidth;
+                        if (activeCallForCat.isRecall) {
+                            cardEl.classList.add('flash-red');
+                        } else {
+                            cardEl.classList.add('flash-green');
+                        }
+                    } else {
+                        numEl.textContent = '---';
+                        cardEl.classList.remove('flash-green', 'flash-red');
+                        cardEl.classList.add('idle');
+                    }
+                }
+            });
+        }
+
+        function renderSingleCallUI(callData) {
+            if (!callData) return;
+            const { windowId, windowName, ticketId, purpose, type, isCashier, isRecall } = callData;
+            const cat = getCategoryInfo(ticketId, purpose, type);
+
+            if (isCashier) {
+                renderCashierSection([callData]);
+            } else {
+                const titleEl = document.getElementById('nc-window-title');
+                const cardEl = document.getElementById('nc-cat-card');
+                const numEl = document.getElementById('nc-ticket-num');
+                const labelEl = document.getElementById('nc-cat-label');
+
+                titleEl.textContent = formatWindowName(windowId);
+                numEl.textContent = ticketId;
+                labelEl.textContent = cat.name;
+
+                cardEl.className = 'cat-card ' + cat.cssClass;
+                cardEl.classList.remove('flash-green', 'flash-red', 'idle');
+
+                void cardEl.offsetWidth;
+
+                if (isRecall) {
+                    cardEl.classList.add('flash-red');
+                } else {
+                    cardEl.classList.add('flash-green');
+                }
+            }
+        }
+
+        function syncScreenDisplay() {
+            if (isAudioAnnouncing) return;
+
+            const activeCalls = Object.values(activeCallsMap);
+            const activeOtherCalls = activeCalls.filter(c => !c.isCashier);
+            const activeCashierCalls = activeCalls.filter(c => c.isCashier);
+
+            // 1. Render/Clear Cashier Section per category card
+            renderCashierSection(activeCashierCalls);
+
+            // 2. Render/Clear Other Windows Section (Visual Loop, NO SOUND)
+            if (activeOtherCalls.length === 0) {
+                const titleEl = document.getElementById('nc-window-title');
+                const cardEl = document.getElementById('nc-cat-card');
+                const numEl = document.getElementById('nc-ticket-num');
+                const labelEl = document.getElementById('nc-cat-label');
+
+                if (titleEl && cardEl && numEl && labelEl) {
+                    titleEl.textContent = 'WINDOW ?';
+                    numEl.textContent = '---';
+                    labelEl.textContent = 'STANDBY';
+                    cardEl.className = 'cat-card cat-renewal idle';
+                    cardEl.classList.remove('flash-green', 'flash-red');
+                }
+            } else {
+                visualLoopIndex = visualLoopIndex % activeOtherCalls.length;
+                const currentCall = activeOtherCalls[visualLoopIndex];
+                renderSingleCallUI(currentCall);
+            }
+        }
+
+        setInterval(() => {
+            if (isAudioAnnouncing) return;
+            const activeOtherCalls = Object.values(activeCallsMap).filter(c => !c.isCashier);
+            if (activeOtherCalls.length > 1) {
+                visualLoopIndex = (visualLoopIndex + 1) % activeOtherCalls.length;
+                syncScreenDisplay();
+            }
+        }, 5000);
+
+        /* ===================================================================
+           3. ON-HOLD AUTOMATIC ROTATION (10 Seconds Interval)
+           =================================================================== */
+        const holdCategoryPairs = [
+            [
+                { key: 'renewal', name: 'RENEWAL', cssClass: 'cat-renewal' },
+                { key: 'misc', name: 'MISCELLANEOUS', cssClass: 'cat-misc' }
+            ],
+            [
+                { key: 'letas', name: 'LETAS', cssClass: 'cat-letas' },
+                { key: 'priority', name: 'PRIORITY', cssClass: 'cat-priority' }
+            ]
+        ];
+
+        let currentPairIndex = 0;
+
+        function getOnHoldTickets() {
+            try {
+                return JSON.parse(localStorage.getItem('lto_onhold_queue') || '[]');
+            } catch (e) { return []; }
+        }
+
+        function renderOnHoldPanels() {
+            const holdTickets = getOnHoldTickets();
+            const pair = holdCategoryPairs[currentPairIndex];
+
+            [1, 2].forEach((panelNum) => {
+                const catObj = pair[panelNum - 1];
+                const panelEl = document.getElementById('hold-panel-' + panelNum);
+                const subTitleEl = document.getElementById('hold-cat-' + panelNum);
+                const bodyEl = document.getElementById('hold-body-' + panelNum);
+
+                subTitleEl.textContent = catObj.name;
+                subTitleEl.className = 'hold-cat-subtitle ' + catObj.cssClass;
+
+                const filtered = holdTickets.filter(t => {
+                    const c = getCategoryInfo(t.id, t.purpose, t.type);
+                    return c.key === catObj.key;
+                });
+
+                bodyEl.innerHTML = '';
+                if (filtered.length === 0) {
+                    bodyEl.innerHTML = '<tr><td colspan="2" class="hold-empty-row">No tickets on hold</td></tr>';
+                } else {
+                    filtered.forEach(t => {
+                        const tr = document.createElement('tr');
+                        const targetWin = t.heldByWindow || t.calledBy || formatWindowName(t.currentSection || 'Window B');
+                        tr.innerHTML = `<td>${t.id}</td><td>${targetWin}</td>`;
+                        bodyEl.appendChild(tr);
+                    });
+                }
+            });
+        }
+
+        function rotateOnHoldCategories() {
+            const panel1 = document.getElementById('hold-panel-1');
+            const panel2 = document.getElementById('hold-panel-2');
+
+            panel1.classList.add('rotating-fade');
+            panel2.classList.add('rotating-fade');
+
+            setTimeout(() => {
+                currentPairIndex = (currentPairIndex + 1) % holdCategoryPairs.length;
+                renderOnHoldPanels();
+                panel1.classList.remove('rotating-fade');
+                panel2.classList.remove('rotating-fade');
+            }, 400);
+        }
+
+        setInterval(rotateOnHoldCategories, 10000);
+        renderOnHoldPanels();
+
+        /* ===================================================================
+           4. REAL-TIME STORAGE MONITORING & TICKET CLEARANCE
+           =================================================================== */
+        const windowIds = ['cashier', 'windowA', 'windowB', 'windowC', 'windowD', 'windowE', 'windowF', 'windowG', 'windowH', 'windowI', 'windowJ', 'windowM', 'windowN'];
+
+        function checkCallingUpdates() {
+            windowIds.forEach((wId) => {
+                try {
+                    const key = 'lto_' + wId + '_active_calling';
+                    const raw = localStorage.getItem(key);
+
+                    if (!raw) {
+                        if (activeCallsMap[wId]) {
+                            delete activeCallsMap[wId];
+                        }
+                        return;
+                    }
+
+                    const data = JSON.parse(raw);
+                    if (!data || !data.ticket || !data.startTime) {
+                        if (activeCallsMap[wId]) delete activeCallsMap[wId];
+                        return;
+                    }
+
+                    const isCashier = (wId === 'cashier' || wId === 'windowK' || wId === 'windowL');
+                    const lastTime = lastCallTimestamps[wId] || 0;
+                    const isNewCall = data.startTime > lastTime;
+
+                    const callObj = {
+                        windowId: wId,
+                        windowName: formatWindowName(wId),
+                        ticketId: data.ticket.id,
+                        purpose: data.ticket.purpose,
+                        type: data.ticket.type,
+                        isCashier: isCashier,
+                        isRecall: !!data.isRecall,
+                        startTime: data.startTime
+                    };
+
+                    activeCallsMap[wId] = callObj;
+
+                    if (isNewCall) {
+                        lastCallTimestamps[wId] = data.startTime;
+                        queueAudioAnnouncement(callObj);
+                    }
+                } catch (e) { }
+            });
+
+            renderOnHoldPanels();
+            syncScreenDisplay();
+        }
+
+        window.addEventListener('storage', checkCallingUpdates);
+        setInterval(checkCallingUpdates, 300);
+
+        /* ===================================================================
+           5. TEST & DEMO SIMULATION HELPERS
+           =================================================================== */
+        function testCall(wId, tId, purp, isRecall) {
+            enableAudioContext();
+            const nowTime = Date.now();
+            const testPayload = {
+                ticket: { id: tId, purpose: purp, type: purp === 'priority' ? 'priority' : 'regular' },
+                startTime: nowTime,
+                isRecall: isRecall,
+                windowId: wId
+            };
+            localStorage.setItem('lto_' + wId + '_active_calling', JSON.stringify(testPayload));
+            checkCallingUpdates();
+        }
+
+        function clearActiveCall(wId) {
+            localStorage.removeItem('lto_' + wId + '_active_calling');
+            if (activeCallsMap[wId]) delete activeCallsMap[wId];
+            checkCallingUpdates();
+        }
+
+        function clearAllActiveCalls() {
+            windowIds.forEach(wId => {
+                localStorage.removeItem('lto_' + wId + '_active_calling');
+                delete activeCallsMap[wId];
+            });
+            checkCallingUpdates();
+        }
+
+        function seedSampleHoldData() {
+            const sampleHolds = [
+                { id: 'R-002', purpose: 'renewal', heldByWindow: 'WINDOW B', status: 'onhold' },
+                { id: 'R-005', purpose: 'renewal', heldByWindow: 'WINDOW C', status: 'onhold' },
+                { id: 'M-002', purpose: 'miscellaneous', heldByWindow: 'WINDOW D', status: 'onhold' },
+                { id: 'M-008', purpose: 'miscellaneous', heldByWindow: 'WINDOW E', status: 'onhold' },
+                { id: 'L-004', purpose: 'letas', heldByWindow: 'WINDOW B', status: 'onhold' },
+                { id: 'P-003', purpose: 'renewal', type: 'priority', heldByWindow: 'WINDOW Cashier', status: 'onhold' }
+            ];
+            localStorage.setItem('lto_onhold_queue', JSON.stringify(sampleHolds));
+            renderOnHoldPanels();
+            alert("Sample On-Hold data populated!");
+        }
+
+        function toggleTestPanel() {
+            const panel = document.getElementById('test-panel');
+            panel.classList.toggle('collapsed');
+            document.getElementById('test-panel-icon').textContent = panel.classList.contains('collapsed') ? '▲' : '▼';
+        }
+    </script>
+</body>
+
+</html>

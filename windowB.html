@@ -1403,11 +1403,13 @@
             }
         }
 
-        function saveActiveCalling(ticket, startTime) {
+        function saveActiveCalling(ticket, startTime, isRecall) {
             if (ticket) {
                 localStorage.setItem(LS_CALLING, JSON.stringify({
                     ticket: ticket,
-                    startTime: startTime || Date.now()
+                    startTime: startTime || Date.now(),
+                    isRecall: !!isRecall,
+                    windowId: WINDOW_ID
                 }));
             } else {
                 localStorage.removeItem(LS_CALLING);
@@ -1718,7 +1720,7 @@
         function callAgain() {
             if (!currentCalling) return;
             var nowTime = Date.now();
-            saveActiveCalling(currentCalling, nowTime);
+            saveActiveCalling(currentCalling, nowTime, true);
             startTimer(nowTime);
             showToast('Calling again: ' + currentCalling.id, 'login');
         }
@@ -1744,6 +1746,7 @@
             if (!currentCalling) return;
             var h = JSON.parse(localStorage.getItem(LS_HOLD) || '[]');
             currentCalling.status = 'onhold';
+            currentCalling.heldByWindow = 'WINDOW ' + WINDOW_ID.replace(/^window/i, '').toUpperCase();
             h.push(currentCalling);
             localStorage.setItem(LS_HOLD, JSON.stringify(h));
             saveActiveCalling(null);
