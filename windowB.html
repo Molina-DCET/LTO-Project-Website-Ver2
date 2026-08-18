@@ -273,72 +273,90 @@
            STATISTICS  (left-bottom)
            ============================================= */
         .wb-stats-inner {
-            padding: 14px 16px 10px;
-            background: linear-gradient(rgb(255, 255, 255) 0%, rgb(0, 82, 255) 100%)
+            padding: 16px 20px 14px;
+            background: #ffffff;
+            border-radius: 18px;
         }
 
         .wb-stats-header-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            padding-left: 30px;
+            margin-bottom: 12px;
+            padding: 0 4px;
         }
 
         .wb-stats-title-txt {
-            font-size: .8rem;
+            font-size: .85rem;
             font-weight: 900;
-            color: #222;
+            color: #111;
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
 
         .wb-stats-arrow-btn {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: rgba(0, 52, 255, .1);
-            border: 1.5px solid rgba(0, 52, 255, .25);
-            color: var(--btn-blue);
+            background: rgba(0, 82, 255, .08);
+            border: 1.5px solid rgba(0, 82, 255, .2);
+            color: #0052ff;
             font-size: .95rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background .2s, transform .2s;
+            transition: background .2s, transform .2s, box-shadow .2s;
         }
 
         .wb-stats-arrow-btn:hover {
-            background: rgba(0, 52, 255, .2);
-            transform: scale(1.1);
+            background: rgba(0, 82, 255, .18);
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(0, 82, 255, 0.2);
         }
 
         /* Summary numbers row */
         .wb-stats-nums {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 8px;
-            padding: 0px 0px 0px 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+            padding: 0;
         }
 
         .wb-stat-pill {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            justify-content: center;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .wb-stat-pill.entries-box {
+            background: linear-gradient(135deg, rgba(230, 0, 40, 0.04), rgba(230, 0, 40, 0.1));
+            border-color: rgba(230, 0, 40, 0.2);
+        }
+
+        .wb-stat-pill.acc-box {
+            background: linear-gradient(135deg, rgba(0, 82, 255, 0.04), rgba(0, 82, 255, 0.1));
+            border-color: rgba(0, 82, 255, 0.2);
         }
 
         .wb-stat-pill-label {
-            font-size: .6rem;
+            font-size: .62rem;
             font-weight: 900;
-            color: #888;
+            color: #666;
             text-transform: uppercase;
-            letter-spacing: .8px;
+            letter-spacing: 0.9px;
+            margin-bottom: 2px;
         }
 
         .wb-stat-pill-val {
-            font-size: 1.7rem;
+            font-size: 1.8rem;
             font-weight: 900;
-            color: #111;
             line-height: 1.1;
         }
 
@@ -353,7 +371,7 @@
         /* Chart slide wrapper */
         .wb-stats-slides {
             position: relative;
-            height: 130px;
+            height: 138px;
             overflow: hidden;
         }
 
@@ -375,7 +393,8 @@
         .wb-chart-svg {
             width: 100%;
             height: 128px;
-            padding-right: 14px;
+            padding-right: 40px;
+            overflow: visible;
         }
 
         /* SVG styles */
@@ -385,9 +404,10 @@
         }
 
         .wbc-lbl {
-            fill: #ffffff;
+            fill: #000000;
             font-size: 9px;
             font-family: "Bookman Old Style", serif;
+            transform: translateY(5px);
         }
 
         .wbc-line-e {
@@ -1078,11 +1098,11 @@
 
                     <!-- Summary numbers -->
                     <div class="wb-stats-nums">
-                        <div class="wb-stat-pill">
+                        <div class="wb-stat-pill entries-box">
                             <span class="wb-stat-pill-label">Total Entries</span>
                             <span class="wb-stat-pill-val entries-color" id="stat-entries-num">0</span>
                         </div>
-                        <div class="wb-stat-pill">
+                        <div class="wb-stat-pill acc-box">
                             <span class="wb-stat-pill-label">Accomplished</span>
                             <span class="wb-stat-pill-val accomplished-color" id="stat-acc-num">0</span>
                         </div>
@@ -1272,7 +1292,86 @@
             });
         }
 
-        function getStats() { return JSON.parse(localStorage.getItem(LS_STATS) || '{"entries":0,"accomplished":0,"hourly":[]}'); }
+        function getStatsForWindow(wId) {
+            var rawQ = JSON.parse(localStorage.getItem('lto_ticket_queue') || '[]');
+            var rawH = JSON.parse(localStorage.getItem('lto_onhold_queue') || '[]');
+            var rawA = JSON.parse(localStorage.getItem('lto_accomplished_queue') || '[]');
+
+            var allTickets = rawQ.concat(rawH).concat(rawA);
+
+            var windowIds = ['windowA', 'windowB', 'windowC', 'windowD', 'windowE', 'windowF', 'windowG', 'windowH', 'windowI', 'windowJ', 'windowM', 'windowN', 'cashier'];
+            windowIds.forEach(function (id) {
+                try {
+                    var callingData = JSON.parse(localStorage.getItem('lto_' + id + '_active_calling'));
+                    if (callingData && callingData.ticket) {
+                        var exists = allTickets.some(function (t) { return t.id === callingData.ticket.id; });
+                        if (!exists) allTickets.push(callingData.ticket);
+                    }
+                } catch (e) { }
+            });
+
+            var entries = 0;
+            var accomplished = 0;
+            var hourly = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            var accHourly = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+            allTickets.forEach(function (ticket) {
+                if (!ticket || !ticket.purpose) return;
+                var purp = (ticket.purpose || '').toLowerCase();
+                var cur = ticket.currentSection || '';
+
+                var initRoute = [];
+                if (purp === 'miscellaneous' || purp === 'misc') initRoute = ['windowD', 'windowE'];
+                else if (purp === 'letas') initRoute = ['windowB', 'windowC'];
+                else initRoute = ['windowE', 'windowF', 'windowG', 'windowH', 'windowI', 'windowJ'];
+
+                var hr = ticket.printedAt ? new Date(ticket.printedAt).getHours() : new Date().getHours();
+                if (hr < 0 || hr > 23) hr = new Date().getHours();
+
+                if (initRoute.indexOf(wId) !== -1) {
+                    entries++;
+                    hourly[hr] = (hourly[hr] || 0) + 1;
+
+                    if (cur === 'Cashier' || cur === 'M_N' || ticket.status === 'accomplished') {
+                        accomplished++;
+                        var accHr = ticket.accomplishedAt ? new Date(ticket.accomplishedAt).getHours() : hr;
+                        if (accHr < 0 || accHr > 23) accHr = hr;
+                        accHourly[accHr] = (accHourly[accHr] || 0) + 1;
+                    }
+                }
+
+                if (wId === 'cashier') {
+                    if (cur === 'Cashier' || cur === 'M_N' || ticket.status === 'accomplished') {
+                        entries++;
+                        hourly[hr] = (hourly[hr] || 0) + 1;
+                        if (cur === 'M_N' || ticket.status === 'accomplished') {
+                            accomplished++;
+                            accHourly[hr] = (accHourly[hr] || 0) + 1;
+                        }
+                    }
+                }
+
+                if (wId === 'windowM' || wId === 'windowN') {
+                    if (cur === 'M_N' || ticket.status === 'accomplished') {
+                        entries++;
+                        hourly[hr] = (hourly[hr] || 0) + 1;
+                        if (ticket.status === 'accomplished') {
+                            accomplished++;
+                            accHourly[hr] = (accHourly[hr] || 0) + 1;
+                        }
+                    }
+                }
+            });
+
+            return {
+                entries: entries,
+                accomplished: accomplished,
+                hourly: hourly,
+                accHourly: accHourly
+            };
+        }
+
+        function getStats() { return getStatsForWindow(WINDOW_ID); }
         function getAccList() { return JSON.parse(localStorage.getItem(LS_ACC) || '[]'); }
 
         function saveQueue(q) {
@@ -1315,22 +1414,69 @@
             }
         }
 
+        function getWindowsForSection(section) {
+            if (section === 'C_B') return ['windowB', 'windowC'];
+            if (section === 'D_E') return ['windowD', 'windowE'];
+            if (section === 'E_J') return ['windowE', 'windowF', 'windowG', 'windowH', 'windowI', 'windowJ'];
+            if (section === 'Cashier') return ['cashier'];
+            if (section === 'M_N') return ['windowM', 'windowN'];
+            return [WINDOW_ID];
+        }
+
+        function getTicketSectionRoute(ticket) {
+            if (!ticket) return WINDOW_SECTION;
+            var cur = ticket.currentSection;
+            if (cur === 'C_B' || cur === 'D_E' || cur === 'E_J' || cur === 'Cashier' || cur === 'M_N') {
+                return cur;
+            }
+            var purp = (ticket.purpose || '').toLowerCase();
+            if (purp === 'miscellaneous' || purp === 'misc') return 'D_E';
+            if (purp === 'letas') return 'C_B';
+            if (purp === 'renewal' || purp === 'other') return 'E_J';
+            return 'E_J';
+        }
+
+        function recordSectionEntry(section) {
+            var windows = getWindowsForSection(section);
+            var hr = new Date().getHours();
+            windows.forEach(function (wId) {
+                var statsKey = 'lto_stats_' + wId;
+                var st = JSON.parse(localStorage.getItem(statsKey) || '{"entries":0,"accomplished":0,"hourly":[],"accHourly":[]}');
+                st.entries = (st.entries || 0) + 1;
+                if (!Array.isArray(st.hourly)) st.hourly = [];
+                while (st.hourly.length <= hr) st.hourly.push(0);
+                st.hourly[hr] = (st.hourly[hr] || 0) + 1;
+                localStorage.setItem(statsKey, JSON.stringify(st));
+            });
+        }
+
+        function recordSectionAccomplished(section) {
+            var windows = getWindowsForSection(section);
+            var hr = new Date().getHours();
+            windows.forEach(function (wId) {
+                var statsKey = 'lto_stats_' + wId;
+                var st = JSON.parse(localStorage.getItem(statsKey) || '{"entries":0,"accomplished":0,"hourly":[],"accHourly":[]}');
+                st.accomplished = (st.accomplished || 0) + 1;
+                if (!Array.isArray(st.accHourly)) st.accHourly = [];
+                while (st.accHourly.length <= hr) st.accHourly.push(0);
+                st.accHourly[hr] = (st.accHourly[hr] || 0) + 1;
+                localStorage.setItem(statsKey, JSON.stringify(st));
+            });
+        }
+
         function advanceTicket(ticket) {
-            var nextSec = getNextSection(ticket.purpose, ticket.currentSection || WINDOW_SECTION);
+            var currentSec = getTicketSectionRoute(ticket);
+            var nextSec = getNextSection(ticket.purpose, currentSec);
+
+            // Record accomplished stats for the section route handling this ticket
+            recordSectionAccomplished(currentSec);
+
             if (nextSec === 'Complete') {
                 ticket.status = 'accomplished';
                 ticket.accomplishedAt = Date.now();
                 var acc = getAccList();
                 acc.push(ticket);
                 saveAccList(acc);
-
-                var st = getStats();
-                st.accomplished = (st.accomplished || 0) + 1;
-                var hr = new Date().getHours();
-                if (!Array.isArray(st.accHourly)) st.accHourly = [];
-                while (st.accHourly.length <= hr) st.accHourly.push(0);
-                st.accHourly[hr] = (st.accHourly[hr] || 0) + 1;
-                saveStats(st);
             } else {
                 ticket.currentSection = nextSec;
                 ticket.status = 'pending';
@@ -1339,6 +1485,9 @@
                 raw = raw.filter(function (item) { return item.id !== ticket.id; });
                 raw.push(ticket);
                 localStorage.setItem(LS_QUEUE, JSON.stringify(raw));
+
+                // Record entries for target window section route
+                recordSectionEntry(nextSec);
             }
         }
 
@@ -1763,7 +1912,12 @@
             document.getElementById('stats-title-txt').textContent = n === 0 ? 'STATISTICS | Entries' : 'STATISTICS | Accomplished';
         }
 
+        function trackQueueEntries() {
+            // Disabled auto-incrementing on page view to prevent double-counting
+        }
+
         function refreshStats() {
+            trackQueueEntries();
             var st = getStats();
             var entries = Array.isArray(st.hourly) ? st.hourly : [];
             var acc = Array.isArray(st.accHourly) ? st.accHourly : [];

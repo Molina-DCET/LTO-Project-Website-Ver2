@@ -45,43 +45,55 @@
                 </a>
                 <a href="windowB.html" class="window-btn btn-window">
                     <span class="window-btn-text">B</span>
+                    <span class="window-badge" id="badge-windowB">0</span>
                 </a>
                 <a href="windowC.html" class="window-btn btn-window">
                     <span class="window-btn-text">C</span>
+                    <span class="window-badge" id="badge-windowC">0</span>
                 </a>
                 <a href="windowD.html" class="window-btn btn-window">
                     <span class="window-btn-text">D</span>
+                    <span class="window-badge" id="badge-windowD">0</span>
                 </a>
                 <a href="windowE.html" class="window-btn btn-window">
                     <span class="window-btn-text">E</span>
+                    <span class="window-badge" id="badge-windowE">0</span>
                 </a>
 
                 <!-- Row 2: F to J -->
                 <a href="windowF.html" class="window-btn btn-window">
                     <span class="window-btn-text">F</span>
+                    <span class="window-badge" id="badge-windowF">0</span>
                 </a>
                 <a href="windowG.html" class="window-btn btn-window">
                     <span class="window-btn-text">G</span>
+                    <span class="window-badge" id="badge-windowG">0</span>
                 </a>
                 <a href="windowH.html" class="window-btn btn-window">
                     <span class="window-btn-text">H</span>
+                    <span class="window-badge" id="badge-windowH">0</span>
                 </a>
                 <a href="windowI.html" class="window-btn btn-window">
                     <span class="window-btn-text">I</span>
+                    <span class="window-badge" id="badge-windowI">0</span>
                 </a>
                 <a href="windowJ.html" class="window-btn btn-window">
                     <span class="window-btn-text">J</span>
+                    <span class="window-badge" id="badge-windowJ">0</span>
                 </a>
 
                 <!-- Row 3: M, N, Cashier, Control Panel -->
                 <a href="windowM.html" class="window-btn btn-window">
                     <span class="window-btn-text">M</span>
+                    <span class="window-badge" id="badge-windowM">0</span>
                 </a>
                 <a href="windowN.html" class="window-btn btn-window">
                     <span class="window-btn-text">N</span>
+                    <span class="window-badge" id="badge-windowN">0</span>
                 </a>
                 <a href="cashier.html" class="window-btn btn-cashier btn-text-long">
                     <span class="window-btn-text">CASHIER</span>
+                    <span class="window-badge" id="badge-cashier">0</span>
                 </a>
                 <a href="controlPanel.html" class="window-btn btn-control-panel btn-text-long">
                     <span class="window-btn-text">CONTROL<br>PANEL</span>
@@ -95,6 +107,85 @@
 
     <!-- Scripts -->
     <script>
+        function isTicketInWindowSection(ticket, section) {
+            if (!ticket) return false;
+            var cur = ticket.currentSection;
+            var purp = (ticket.purpose || '').toLowerCase();
+
+            if (section === 'C_B') {
+                return cur === 'C_B' || (!cur && purp === 'letas');
+            }
+            if (section === 'D_E') {
+                return cur === 'D_E' || (!cur && (purp === 'miscellaneous' || purp === 'misc'));
+            }
+            if (section === 'E_J') {
+                return cur === 'E_J' || (!cur && (purp === 'renewal' || purp === 'other'));
+            }
+            if (section === 'D_E_or_E_J') {
+                return cur === 'D_E' || cur === 'E_J' || (!cur && (purp === 'miscellaneous' || purp === 'misc' || purp === 'renewal' || purp === 'other'));
+            }
+            if (section === 'Cashier') {
+                return cur === 'Cashier';
+            }
+            if (section === 'M_N') {
+                return cur === 'M_N';
+            }
+            return false;
+        }
+
+        function updateBadges() {
+            var raw = JSON.parse(localStorage.getItem('lto_ticket_queue') || '[]');
+
+            var counts = {
+                'windowB': 0, 'windowC': 0,
+                'windowD': 0, 'windowE': 0,
+                'windowF': 0, 'windowG': 0, 'windowH': 0, 'windowI': 0, 'windowJ': 0,
+                'windowM': 0, 'windowN': 0,
+                'cashier': 0
+            };
+
+            raw.forEach(function (ticket) {
+                if (isTicketInWindowSection(ticket, 'C_B')) {
+                    counts['windowB']++;
+                    counts['windowC']++;
+                }
+                if (isTicketInWindowSection(ticket, 'D_E')) {
+                    counts['windowD']++;
+                    counts['windowE']++;
+                }
+                if (isTicketInWindowSection(ticket, 'E_J')) {
+                    counts['windowE']++;
+                    counts['windowF']++;
+                    counts['windowG']++;
+                    counts['windowH']++;
+                    counts['windowI']++;
+                    counts['windowJ']++;
+                }
+                if (isTicketInWindowSection(ticket, 'Cashier')) {
+                    counts['cashier']++;
+                }
+                if (isTicketInWindowSection(ticket, 'M_N')) {
+                    counts['windowM']++;
+                    counts['windowN']++;
+                }
+            });
+
+            for (var wId in counts) {
+                var badgeEl = document.getElementById('badge-' + wId);
+                if (badgeEl) {
+                    var count = counts[wId];
+                    badgeEl.textContent = count;
+                    if (count > 0) {
+                        badgeEl.style.display = 'flex';
+                    } else {
+                        badgeEl.style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        updateBadges();
+        setInterval(updateBadges, 1000);
         // Live Clock script (Philippine Standard Time UTC+8 / Asia/Manila)
         function updateClock() {
             try {

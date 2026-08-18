@@ -525,10 +525,36 @@
             queue.push(ticketObj);
             localStorage.setItem('lto_ticket_queue', JSON.stringify(queue));
 
+            // Helper to record window entry stats
+            function recordWindowEntry(wId) {
+                const statsKey = 'lto_stats_' + wId;
+                const st = JSON.parse(localStorage.getItem(statsKey) || '{"entries":0,"accomplished":0,"hourly":[],"accHourly":[]}');
+                st.entries = (st.entries || 0) + 1;
+                const hr = new Date().getHours();
+                if (!Array.isArray(st.hourly)) st.hourly = [];
+                while (st.hourly.length <= hr) st.hourly.push(0);
+                st.hourly[hr] = (st.hourly[hr] || 0) + 1;
+                localStorage.setItem(statsKey, JSON.stringify(st));
+            }
+
+            if (initialSection === 'C_B') {
+                recordWindowEntry('windowB');
+                recordWindowEntry('windowC');
+            } else if (initialSection === 'D_E') {
+                recordWindowEntry('windowD');
+                recordWindowEntry('windowE');
+            } else if (initialSection === 'E_J') {
+                recordWindowEntry('windowE');
+                recordWindowEntry('windowF');
+                recordWindowEntry('windowG');
+                recordWindowEntry('windowH');
+                recordWindowEntry('windowI');
+                recordWindowEntry('windowJ');
+            }
+
             // === Update global stats ===
             const stats = JSON.parse(localStorage.getItem('lto_stats') || '{"entries":0,"accomplished":0,"hourly":[]}');
             stats.entries = (stats.entries || 0) + 1;
-            // Build hourly bucket (0-23)
             const nowHr = new Date().getHours();
             if (!Array.isArray(stats.hourly)) stats.hourly = [];
             while (stats.hourly.length <= nowHr) stats.hourly.push(0);
