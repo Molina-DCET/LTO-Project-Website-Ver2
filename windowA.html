@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LTO Cabuyao District Office - Registration (Window A)</title>
-    <meta name="description" content="Land Transportation Office Cabuyao District Office Registration Queue Ticket Generator">
+    <meta name="description"
+        content="Land Transportation Office Cabuyao District Office Registration Queue Ticket Generator">
     <link rel="stylesheet" href="style.css">
     <style>
         /* Window A header button styles (matching Window B) */
@@ -53,6 +55,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- Header Section -->
@@ -78,9 +81,9 @@
     <main class="hero">
         <!-- Faint Watermark Logo in Background -->
         <img src="img/logo.png" alt="LTO Logo Watermark" class="hero-watermark">
-        
+
         <h1 class="hero-title registration-title">REGISTRATION</h1>
-        
+
         <div class="registration-container">
             <!-- Left Pane: Input and Selections -->
             <div class="registration-left">
@@ -91,7 +94,7 @@
                             <input type="text" id="name-input" placeholder=" " autocomplete="off">
                             <label for="name-input">NAME(OPTIONAL)</label>
                         </div>
-                        
+
                         <div class="priority-toggle-container">
                             <div class="toggle-switch" id="priority-toggle">
                                 <div class="toggle-slider"></div>
@@ -125,6 +128,14 @@
                                 <img src="img/alert-circle.png" alt="Letas Icon" class="card-logo">
                             </div>
                         </div>
+
+                        <!-- Other Card (Blue theme) -->
+                        <div class="purpose-card card-other" id="card-other" onclick="selectPurpose('other')">
+                            <span class="card-title">OTHER</span>
+                            <div class="logo-container">
+                                <img src="img/Settings.png" alt="Other Icon" class="card-logo">
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Comment Input with Importance Toggle Circle -->
@@ -132,14 +143,17 @@
                         <div class="input-border-group comment-textarea-group">
                             <textarea id="comment-input" placeholder=" " autocomplete="off" rows="3"></textarea>
                             <label for="comment-input">COMMENT</label>
-                            <div class="comment-important-circle" id="important-circle" title="Mark as Important" onclick="toggleCommentImportant()"></div>
+                            <div class="comment-important-circle" id="important-circle" title="Mark as Important"
+                                onclick="toggleCommentImportant()"></div>
                         </div>
                     </div>
 
                     <!-- Glass Texture Buttons Row -->
                     <div class="registration-buttons-row">
-                        <button type="button" class="generate-btn" id="generate-button" disabled onclick="generateTicket()">GENERATE</button>
-                        <button type="button" class="print-btn" id="print-button" style="display: none;" onclick="printTicket()">
+                        <button type="button" class="generate-btn" id="generate-button" disabled
+                            onclick="generateTicket()">GENERATE</button>
+                        <button type="button" class="print-btn" id="print-button" style="display: none;"
+                            onclick="printTicket()">
                             <span class="print-btn-text">PRINT</span>
                         </button>
                     </div>
@@ -149,7 +163,7 @@
             <!-- Right Pane: Ticket Live Preview -->
             <div class="registration-right">
                 <span class="preview-header">PREVIEW</span>
-                
+
                 <div class="preview-box">
                     <!-- Default Placeholder when no preview exists -->
                     <div class="no-preview" id="no-preview-placeholder">
@@ -163,53 +177,52 @@
                             <div class="ticket-lto-title">LAND TRANSPORTATION OFFICE</div>
                             <div class="ticket-lto-subtitle">CABUYAO DISTRICT OFFICE</div>
                         </div>
-                        
+
                         <div class="ticket-divider"></div>
-                        
+
                         <div class="ticket-section-title">TICKET NUMBER</div>
-                        
+
                         <!-- Boxed Ticket Number -->
                         <div class="ticket-number-box" id="ticket-num-box">
                             <div class="ticket-box-header" id="ticket-box-type">PRIORITY</div>
                             <div class="ticket-box-number" id="ticket-box-num">P-001</div>
                             <div class="ticket-box-color" id="ticket-box-color-label">COLOR: PINK</div>
                         </div>
-                        
-                        <div class="ticket-divider"></div>
-                        
-                        <div class="ticket-section-title">TRANSACTION INFO</div>
-                        
-                        <!-- Ticket Info Fields -->
-                        <div class="ticket-info-grid">
-                            <div class="info-row">
-                                <span class="info-label">NAME:</span>
-                                <span class="info-val" id="ticket-info-name">Juan Dela Cruz</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">DATE:</span>
-                                <span class="info-val" id="ticket-info-date">08/02/2026</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">TIME:</span>
-                                <span class="info-val" id="ticket-info-time">14:34</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">TYPE:</span>
-                                <span class="info-val" id="ticket-info-type">Priority</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">PURPOSE:</span>
-                                <span class="info-val" id="ticket-info-purpose">Renewal</span>
-                            </div>
-                            <!-- Optional dynamic comment row -->
-                            <div class="info-row" id="ticket-info-comment-row" style="display: none;">
-                                <span class="info-label">COMMENT:</span>
-                                <span class="info-val" id="ticket-info-comment">None</span>
+
+                        <!-- Transaction Info (Hidden on printed slip, retained in DOM for system metadata) -->
+                        <div class="ticket-transaction-info" style="display: none;">
+                            <div class="ticket-section-title">TRANSACTION INFO</div>
+                            <div class="ticket-info-grid">
+                                <div class="info-row">
+                                    <span class="info-label">NAME:</span>
+                                    <span class="info-val" id="ticket-info-name">Unknown</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">DATE:</span>
+                                    <span class="info-val" id="ticket-info-date">08/02/2026</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">TIME:</span>
+                                    <span class="info-val" id="ticket-info-time">14:34</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">TYPE:</span>
+                                    <span class="info-val" id="ticket-info-type">Priority</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">PURPOSE:</span>
+                                    <span class="info-val" id="ticket-info-purpose">Renewal</span>
+                                </div>
+                                <!-- Optional dynamic comment row -->
+                                <div class="info-row" id="ticket-info-comment-row" style="display: none;">
+                                    <span class="info-label">COMMENT:</span>
+                                    <span class="info-val" id="ticket-info-comment">None</span>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Barcode Area (Generated dynamically via scripts) -->
-                        <div class="barcode" id="ticket-barcode"></div>
+                        <!-- Barcode Value Area (Plain Text Display) -->
+                        <div class="ticket-barcode-text" id="ticket-barcode-text"></div>
 
                         <div class="ticket-disclaimer-box">
                             Please take your seat and wait for your<br>number appear on the screen
@@ -237,7 +250,7 @@
         function updateClock() {
             try {
                 const now = new Date();
-                
+
                 const dateOptions = {
                     timeZone: 'Asia/Manila',
                     month: 'long',
@@ -245,7 +258,7 @@
                     year: 'numeric'
                 };
                 const dateStr = now.toLocaleDateString('en-US', dateOptions);
-                
+
                 const timeOptions = {
                     timeZone: 'Asia/Manila',
                     hour: '2-digit',
@@ -255,7 +268,7 @@
                 };
                 let timeStr = now.toLocaleTimeString('en-US', timeOptions);
                 timeStr = timeStr.replace(/\s*[a-zA-Z]+/g, '');
-                
+
                 document.getElementById('date-display').textContent = dateStr;
                 document.getElementById('time-display').textContent = timeStr;
             } catch (e) {
@@ -270,18 +283,48 @@
         let selectedPurpose = '';
         let isPriority = false;
         let isCommentImportant = false;
+        let pendingTicketPrefix = '';
+
+        // Helper to update Generate button state based on selections and required fields
+        function updateGenerateButtonState() {
+            const genBtn = document.getElementById('generate-button');
+            if (!selectedPurpose) {
+                genBtn.setAttribute('disabled', 'true');
+                return;
+            }
+            if (selectedPurpose === 'other') {
+                const commentVal = document.getElementById('comment-input').value.trim();
+                if (!commentVal) {
+                    genBtn.setAttribute('disabled', 'true');
+                } else {
+                    genBtn.removeAttribute('disabled');
+                }
+            } else {
+                genBtn.removeAttribute('disabled');
+            }
+        }
+
+        // Helper to update comment field UI when Other is selected
+        function updateCommentRequiredUI() {
+            const commentGroup = document.querySelector('.comment-textarea-group');
+            const commentLabel = commentGroup ? commentGroup.querySelector('label') : null;
+            if (selectedPurpose === 'other') {
+                if (commentGroup) commentGroup.classList.add('required');
+                if (commentLabel) commentLabel.textContent = 'COMMENT (REQUIRED FOR OTHER)';
+            } else {
+                if (commentGroup) commentGroup.classList.remove('required');
+                if (commentLabel) commentLabel.textContent = 'COMMENT';
+            }
+        }
 
         // selectPurpose implementation
         function selectPurpose(purpose) {
             const card = document.getElementById('card-' + purpose);
-            
+
             if (selectedPurpose === purpose) {
                 // Clicked the already selected card, so UNCLICK it
                 selectedPurpose = '';
                 card.classList.remove('selected');
-                
-                // Disable the Generate button
-                document.getElementById('generate-button').setAttribute('disabled', 'true');
             } else {
                 // Select this card and deselect all others
                 selectedPurpose = purpose;
@@ -289,15 +332,19 @@
                     c.classList.remove('selected');
                 });
                 card.classList.add('selected');
-                
-                // Enable the Generate button
-                document.getElementById('generate-button').removeAttribute('disabled');
             }
+            updateGenerateButtonState();
+            updateCommentRequiredUI();
         }
+
+        // Listen for user typing in comment field to dynamically toggle generate button when Other is selected
+        document.getElementById('comment-input').addEventListener('input', function () {
+            updateGenerateButtonState();
+        });
 
         // Toggle Switch functionality (Priority Toggle)
         const toggleSwitch = document.getElementById('priority-toggle');
-        toggleSwitch.addEventListener('click', function() {
+        toggleSwitch.addEventListener('click', function () {
             isPriority = !isPriority;
             if (isPriority) {
                 toggleSwitch.classList.add('active');
@@ -320,11 +367,15 @@
         // generateTicket implementation
         function generateTicket() {
             if (!selectedPurpose) return;
-            
+            if (selectedPurpose === 'other' && !document.getElementById('comment-input').value.trim()) {
+                showToast('Comment is required when Other is selected.', 'logout');
+                return;
+            }
+
             let prefix = '';
             let boxTypeLabel = '';
             let colorName = '';
-            
+
             // Priority override prefix rules
             if (isPriority) {
                 prefix = 'P';
@@ -343,18 +394,24 @@
                     prefix = 'L';
                     boxTypeLabel = 'LETAS';
                     colorName = 'WHITE';
+                } else if (selectedPurpose === 'other') {
+                    prefix = 'O';
+                    boxTypeLabel = 'OTHER';
+                    colorName = 'BLUE';
                 }
             }
-            
-            // Incremental queue counter using localStorage
+
+            // Store pending prefix for print commit
+            pendingTicketPrefix = prefix;
+
+            // Peek at next queue counter without incrementing localStorage before print
             const counterKey = 'counter_' + prefix;
             let currentCount = parseInt(localStorage.getItem(counterKey) || '0');
-            currentCount = (currentCount + 1) % 1000;
-            localStorage.setItem(counterKey, currentCount);
-            
-            const formattedNum = String(currentCount).padStart(3, '0');
+            let nextCount = (currentCount + 1) % 1000;
+
+            const formattedNum = String(nextCount).padStart(3, '0');
             const ticketId = `${prefix}-${formattedNum}`;
-            
+
             // Format Manila Stamp
             const now = new Date();
             const dateOptions = {
@@ -364,7 +421,7 @@
                 year: 'numeric'
             };
             const dateStr = now.toLocaleDateString('en-US', dateOptions);
-            
+
             const timeOptions = {
                 timeZone: 'Asia/Manila',
                 hour: '2-digit',
@@ -372,25 +429,26 @@
                 hour12: false
             };
             const timeStr = now.toLocaleTimeString('en-US', timeOptions);
-            
+
             // Update Ticket Preview Fields
             document.getElementById('ticket-box-type').textContent = boxTypeLabel;
             document.getElementById('ticket-box-num').textContent = ticketId;
             document.getElementById('ticket-box-color-label').textContent = 'COLOR: ' + colorName;
-            
+
             const numBox = document.getElementById('ticket-num-box');
             numBox.className = 'ticket-number-box ticket-theme-' + colorName.toLowerCase();
-            
-            const nameInputVal = document.getElementById('name-input').value.trim() || 'Juan Dela Cruz';
+
+            // Default blank name to "Unknown"
+            const nameInputVal = document.getElementById('name-input').value.trim() || 'Unknown';
             document.getElementById('ticket-info-name').textContent = nameInputVal;
             document.getElementById('ticket-info-date').textContent = dateStr;
             document.getElementById('ticket-info-time').textContent = timeStr;
             document.getElementById('ticket-info-type').textContent = isPriority ? 'Priority' : 'Regular';
-            
+
             let purposeLabel = selectedPurpose.charAt(0).toUpperCase() + selectedPurpose.slice(1);
             if (selectedPurpose === 'misc') purposeLabel = 'Miscellaneous';
             document.getElementById('ticket-info-purpose').textContent = purposeLabel;
-            
+
             // Dynamic comment text insertion
             const commentVal = document.getElementById('comment-input').value.trim();
             const commentRow = document.getElementById('ticket-info-comment-row');
@@ -408,15 +466,16 @@
             } else {
                 commentRow.style.display = 'none';
             }
-            
-            // Generate Custom Barcode based on ticket numbering and timestamp
+
+            // Display Barcode value as Plain Text
             const barcodeData = `${ticketId}-${dateStr.replace(/\//g, '')}-${timeStr.replace(/:/g, '')}`;
-            generateBarcode(barcodeData);
-            
+            const barcodeElem = document.getElementById('ticket-barcode-text');
+            if (barcodeElem) barcodeElem.textContent = barcodeData;
+
             // Reveal ticket details
             document.getElementById('no-preview-placeholder').style.display = 'none';
             document.getElementById('ticket-paper').style.display = 'block';
-            
+
             // Reveal and trigger left-to-right fill animation on print button
             const printBtn = document.getElementById('print-button');
             printBtn.style.display = 'block';
@@ -425,44 +484,41 @@
             }, 50);
         }
 
-        // Procedural generator to output vertical bars dynamically
-        function generateBarcode(value) {
-            const barcodeContainer = document.getElementById('ticket-barcode');
-            barcodeContainer.innerHTML = '';
-            
-            const seededValue = value + "LTOQUEUESYSTEM";
-            for (let i = 0; i < 48; i++) {
-                const charCode = seededValue.charCodeAt(i % seededValue.length);
-                const val = (charCode + (i * 3)) % 4;
-                
-                const bar = document.createElement('div');
-                if (val === 0) {
-                    bar.className = 'bar-thin';
-                } else if (val === 1) {
-                    bar.className = 'bar-medium';
-                } else if (val === 2) {
-                    bar.className = 'bar-thick';
-                } else {
-                    bar.className = 'bar-space';
-                }
-                barcodeContainer.appendChild(bar);
-            }
-        }
-
         // Print Ticket Action & Page Reset Logic
         function printTicket() {
             const ticketNum = document.getElementById('ticket-box-num').textContent;
-            
-            // === Save ticket object to shared localStorage queue for Window B ===
+
+            // Advance ticket counter in localStorage ONLY when ticket is actually printed
+            if (pendingTicketPrefix) {
+                const counterKey = 'counter_' + pendingTicketPrefix;
+                let count = parseInt(localStorage.getItem(counterKey) || '0');
+                count = (count + 1) % 1000;
+                localStorage.setItem(counterKey, count);
+                pendingTicketPrefix = '';
+            }
+
+            const rawPurpose = document.getElementById('ticket-info-purpose').textContent;
+            let initialSection = 'E_J';
+            const purpLower = (rawPurpose || '').toLowerCase();
+            if (purpLower === 'miscellaneous' || purpLower === 'misc') {
+                initialSection = 'D_E';
+            } else if (purpLower === 'letas') {
+                initialSection = 'C_B';
+            } else if (purpLower === 'renewal' || purpLower === 'other') {
+                initialSection = 'E_J';
+            }
+
+            // === Save ticket object to shared localStorage queue ===
             const ticketObj = {
-                id:      ticketNum,
-                name:    document.getElementById('ticket-info-name').textContent,
-                date:    document.getElementById('ticket-info-date').textContent,
-                time:    document.getElementById('ticket-info-time').textContent,
-                type:    document.getElementById('ticket-info-type').textContent,
-                purpose: document.getElementById('ticket-info-purpose').textContent,
+                id: ticketNum,
+                name: document.getElementById('ticket-info-name').textContent,
+                date: document.getElementById('ticket-info-date').textContent,
+                time: document.getElementById('ticket-info-time').textContent,
+                type: document.getElementById('ticket-info-type').textContent,
+                purpose: rawPurpose,
                 comment: document.getElementById('ticket-info-comment').textContent || '',
-                status:  'pending',
+                status: 'pending',
+                currentSection: initialSection,
                 printedAt: Date.now()
             };
             const queue = JSON.parse(localStorage.getItem('lto_ticket_queue') || '[]');
@@ -482,28 +538,29 @@
 
             // Show toast in lower right indicating print success
             showToast(`Printing Ticket ${ticketNum}... Please take your slip.`, "login");
-            
+
             // Wait for toast duration, then reset registration page inputs
             setTimeout(() => {
                 const printBtn = document.getElementById('print-button');
                 printBtn.classList.remove('animate-fill');
                 printBtn.style.display = 'none';
-                
+
                 selectedPurpose = '';
                 document.querySelectorAll('.purpose-card').forEach(c => {
                     c.classList.remove('selected');
                 });
-                
+
                 isPriority = false;
                 document.getElementById('priority-toggle').classList.remove('active');
-                
+
                 isCommentImportant = false;
                 document.getElementById('important-circle').classList.remove('active');
                 document.getElementById('comment-input').value = '';
                 document.getElementById('name-input').value = '';
-                
+
+                updateCommentRequiredUI();
                 document.getElementById('generate-button').setAttribute('disabled', 'true');
-                
+
                 document.getElementById('no-preview-placeholder').style.display = 'flex';
                 document.getElementById('ticket-paper').style.display = 'none';
             }, 1800);
@@ -516,12 +573,12 @@
             toast.className = `toast toast-${type}`;
             toast.innerHTML = `<span>${message}</span>`;
             container.appendChild(toast);
-            
+
             // Trigger opacity slide
             setTimeout(() => {
                 toast.classList.add('show');
             }, 50);
-            
+
             // Dismiss toast
             setTimeout(() => {
                 toast.classList.remove('show');
@@ -532,14 +589,15 @@
         }
 
         // Logout handler
-        document.getElementById('logout-btn').addEventListener('click', function(e) {
+        document.getElementById('logout-btn').addEventListener('click', function (e) {
             e.preventDefault();
             showToast('Logging out\u2026 Redirecting.', 'logout');
-            setTimeout(function() { window.location.href = 'index.html'; }, 1800);
+            setTimeout(function () { window.location.href = 'index.html'; }, 1800);
         });
     </script>
 
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toast-container"></div>
 </body>
+
 </html>
